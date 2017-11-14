@@ -88,7 +88,7 @@ def translate_callback(r):
 def do_send_msg(conn_id, val):
     global fail, last_query
     val = re.sub(r'^([A-Za-z]+ )([0-9]+)', translate_callback, val)
-    if not my_send(get_connection(conn_id), val):
+    if not my_send(get_connection(conn_id), val + "\r\n"):
         fail.append('Chyba při odesílání zprávy:\n  ' + val[:70])
         return False
     last_query = val

@@ -104,14 +104,6 @@ S   +OK <any>
 
 ---------------------
 
-Neexistující Maildir
-./popser -a authfile -p <port> -d no -c
-F   wait
-F   fail
-F   stderr
-
----------------------
-
 Neexistující authfile
 ./popser -a no -p <port> -d Maildir -c
 F   wait
