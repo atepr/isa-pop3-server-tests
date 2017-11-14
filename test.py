@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+import codecs
 import re
 import time
 import socket
 import subprocess
+import sys
 
 from random import randint
 
@@ -19,6 +21,14 @@ flags = set()
 fail = []
 conn = {}
 msg_ids = []
+
+if sys.stdout.encoding is None or sys.stdout.encoding == 'ANSI_X3.4-1968':
+    utf8_writer = codecs.getwriter('UTF-8')
+    if sys.version_info.major < 3:
+        sys.stdout = utf8_writer(sys.stdout, errors='replace')
+    else:
+        sys.stdout = utf8_writer(sys.stdout.buffer, errors='replace')
+
 
 def get_port():
     global port
