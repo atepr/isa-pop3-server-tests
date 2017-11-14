@@ -77,7 +77,7 @@ def translate_callback(r):
 
 def do_send_msg(conn_id, val):
     global fail, last_query
-    val = re.sub(r'^([A-Z]+ )([0-9]+)', translate_callback, val)
+    val = re.sub(r'^([A-Za-z]+ )([0-9]+)', translate_callback, val)
     if not my_send(get_connection(conn_id), val):
         fail.append('Chyba při odesílání zprávy:\n  ' + val[:70])
         return False
@@ -96,7 +96,7 @@ def do_recv_msg(conn_id, val):
         fail.append('Server vrátil zprávu, která nekončí \\n\n  ' + val[:70])
         return False
     s = s[:-1]
-    if last_query == 'LIST':
+    if last_query.upper() == 'LIST':
         return check_list(s, val)
     val = val.replace(r'<id>', last_id)
     val_r = re.escape(val)
@@ -140,7 +140,6 @@ def check_list(rec, exp):
                 break
         else:
             out = False
-    
     if not out:
         str = ('Server vrátil jinou odpověď na dotaz "{}"\n  ' +
                'Chci: {}\n  Dostal jsem: {}').format(last_query,
@@ -253,6 +252,6 @@ class Color:
     GRAY = '\033[90m'
     RED = '\033[91m'
 
-with open('tests.txt') as f:
+with open('tests.txt', 'r', encoding='utf-8') as f:
     for test in re.split('\n+-{3,}\n+', f.read().strip()):
         do_test(test)

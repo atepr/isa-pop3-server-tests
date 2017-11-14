@@ -94,7 +94,7 @@ S   -ERR <any>
 C   NOOP
 S   +O<any>
 C   UIDL 3
-S   +OK 4 <any>
+S   +OK <id> <any>
 C   UIDL 8
 S   -ERR <any>
 C   ABC
@@ -206,7 +206,7 @@ S   +OK scan listing follows
     5 451
     .
 C   LIst 2
-S   +OK 2 476
+S   +OK <id> 476
 C   dele 3
 S   +OK <any>
 C   dele 3
