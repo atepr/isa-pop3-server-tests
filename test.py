@@ -40,6 +40,7 @@ def open_socket(retries=RETRIES):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('127.0.0.1', port))
+        s.settimeout(0.1)
         return s
     except ConnectionRefusedError:
         if retries == 0:
@@ -49,27 +50,37 @@ def open_socket(retries=RETRIES):
         return open_socket(retries-1)
 
 def my_send(sock, s_msg):
+    global fail
     if sock is None:
         return False
     totalsent = 0
     msg = s_msg.encode('utf-8')
-    while totalsent < len(s_msg):
-        sent = sock.send(msg[totalsent:])
-        if sent == 0:
-            return False
-        totalsent = totalsent + sent
+    try:
+        while totalsent < len(s_msg):
+            sent = sock.send(msg[totalsent:])
+            if sent == 0:
+                return False
+            totalsent = totalsent + sent
+    except socket.timeout:
+        fail.append('Odesílání zprávy trvalo příliš dlouho (timeout)')
+        return False
     return True
 
 def my_receive(sock):
+    global fail
     if sock is None:
         return '\n'
     #chunks = []
     #bytes_recd = 0
     #while bytes_recd < msg_len:
-    chunk = sock.recv(4096)#min(msg_len - bytes_recd, 2048))
+    try:
+        chunk = sock.recv(4096)#min(msg_len - bytes_recd, 2048))
+    except socket.timeout:
+        fail.append('Příjem zprávy trval příliš dlouho (timeout)')
+        return '\n'
     return chunk.decode("utf-8")
     if chunk == b'':
-        return ''
+        return '\n'
     #chunks.append(chunk)
     #bytes_recd = bytes_recd + len(chunk)
     #return b''.join(chunks)
