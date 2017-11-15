@@ -17,3 +17,16 @@ Použití
 5. Spusťte testovací skript:
         
         ./test.py
+
+Co to netestuje
+---------------
+
+Protože se mi s nad tím nechtělo trávit více času, je dost věcí, které
+tento skript netestuje. Mimo jiné mezi ně patří:
+
+* Příkaz `APOP`
+* To, zda a jak server přesouvá maily mezi `new/` a `cur/`, jestli funguje
+    reset
+* To, zda `DELE` při odhlášení skutečně z disku mail vymaže
+* Posílání příliš velkého mailu
+* Co server udělá, pokud mu pošlete zprávu, která nekončí `\r\n`
