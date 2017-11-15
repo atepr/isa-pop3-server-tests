@@ -263,5 +263,19 @@ S   +OK <any>
      ..
      .
     .
+C   TOP 1 9
+S   +OK <any>
+    Ahoj...
+    
+    ..
+    ...
+    ....
+    ...
+    ..
+    
+     .
+     ..
+     ...
+    .
 C   QUIT
 S   +OK <any>
