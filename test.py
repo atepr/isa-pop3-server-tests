@@ -113,7 +113,7 @@ def do_recv_msg(conn_id, val):
                     ' \\r\n  ' + val[:70])
         return False
     s = s.replace('\r', '')
-    if s[-1] != '\n':
+    if len(s) == 0 or s[-1] != '\n':
         fail.append('Server vrátil zprávu, která nekončí \\n\n  ' + val[:70])
         return False
     s = s[:-1]
