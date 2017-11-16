@@ -92,7 +92,7 @@ S   +OK <any>
 C   TOP 7 2
 S   -ERR <any>
 C   NOOP
-S   +O<any>
+S   +OK <any>
 C   UIDL 3
 S   +OK <id> <any>
 C   UIDL 8
