@@ -12,6 +12,7 @@ from random import randint
 POPSER_PATH = '../popser'
 DEFAULT_SLEEP = 0.025
 RETRY_SLEEP = 0.1
+BEFORE_RECV_SLEEP = 0.05
 RETRIES = 10
 
 port = randint(10000, 50000)
@@ -70,6 +71,7 @@ def my_receive(sock):
     global fail
     if sock is None:
         return '\n'
+    time.sleep(BEFORE_RECV_SLEEP)
     #chunks = []
     #bytes_recd = 0
     #while bytes_recd < msg_len:
@@ -121,7 +123,7 @@ def do_recv_msg(conn_id, val):
         return check_list(s, val)
     val = val.replace(r'<id>', last_id)
     val_r = re.escape(val)
-    val_r = val_r.replace(r'\<any\>', '.+')
+    val_r = val_r.replace(r' \<any\>', '.*')
     if not re.match(val_r, s):
         str = ('Server vrátil jinou odpověď na dotaz "{}"\n  ' +
                'Chci: {}\n  Dostal jsem: {}').format(last_query,
@@ -143,7 +145,7 @@ def check_list(rec, exp):
     lines_rec = rec.split('\n')
     lines_exp = exp.split('\n')
     
-    if lines_rec[0][:4] != '+OK ' or lines_rec[-1] != '.':
+    if lines_rec[0][:3] != '+OK' or lines_rec[-1] != '.':
         out = False
     if len(lines_rec) != len(lines_exp):
         out = False
