@@ -148,7 +148,7 @@ S1  +OK <any>
 C1  PASS    
 S1  +OK <any>
 C1  NOOP
-S1  +O<any>
+S1  +OK <any>
 S2  +OK <any>
 C2  USER Tam
 S2  +OK <any>

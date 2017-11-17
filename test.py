@@ -3,6 +3,8 @@
 import codecs
 import re
 import time
+import os
+import shutil
 import socket
 import subprocess
 import sys
@@ -22,6 +24,7 @@ flags = set()
 fail = []
 conn = {}
 msg_ids = []
+inited_maildirs = set()
 
 if sys.stdout.encoding is None or sys.stdout.encoding == 'ANSI_X3.4-1968':
     utf8_writer = codecs.getwriter('UTF-8')
@@ -123,7 +126,7 @@ def do_recv_msg(conn_id, val):
         return check_list(s, val)
     val = val.replace(r'<id>', last_id)
     val_r = re.escape(val)
-    val_r = val_r.replace(r' \<any\>', '.*')
+    val_r = val_r.replace(r'\ \<any\>', '.*')
     if not re.match(val_r, s):
         str = ('Server vrátil jinou odpověď na dotaz "{}"\n  ' +
                'Chci: {}\n  Dostal jsem: {}').format(last_query,
@@ -132,6 +135,27 @@ def do_recv_msg(conn_id, val):
         fail.append(str)
         return False
     return True
+
+def rmdir(dir):
+    try:
+        shutil.rmtree(dir)
+    except FileNotFoundError:
+        pass
+
+def do_action(action):
+    if action[0] == 'init_maildir':
+        dir = action[1]
+        if '/' in dir:
+            return False
+        rmdir(dir + '/new')
+        rmdir(dir + '/cur')
+        shutil.copytree(dir + '/bac', dir + '/new')
+        os.mkdir(dir + '/cur')
+        return True
+    if action[0] == 'reset_server':
+        subprocess.call([POPSER_PATH, '-r'])
+        return True
+    return False
 
 def translate_id(id):
     global msg_ids, last_id
@@ -203,6 +227,12 @@ def do_test(test):
     for a in cmd.split()[1:]:
         if a == '<port>':
             a = get_port()
+        if args[-1] == '-d':
+            if a not in inited_maildirs:
+                do_action(['init_maildir', a])
+                if len(inited_maildirs) > 0:
+                    do_action(['reset_server'])
+                inited_maildirs.add(a)
         args.append(a)
     srv = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     time.sleep(DEFAULT_SLEEP)
@@ -220,6 +250,11 @@ def do_test(test):
         elif key[0] == 'S':
             # Přečíst paket
             if not do_recv_msg(key[1:], val):
+                break
+        elif key[0] == 'A':
+            # Provede akci
+            if not do_action(val.split()):
+                fail.append('Selhala akce: ' + val)
                 break
     
     for _, c in conn.items():
@@ -277,4 +312,7 @@ class Color:
 
 with open('tests.txt', 'r', encoding='utf-8') as f:
     for test in re.split('\n+-{3,}\n+', f.read().strip()):
+        if test.startswith('*'):
+            break
         do_test(test)
+    do_action(['reset_server'])
