@@ -378,7 +378,7 @@ S   +OK <any>
     4 464
     .
 C   LIST 1
-S   +OK 1 493
+S   +OK <id> 493
 C   QUIT
 S   +OK <any>
 
