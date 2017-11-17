@@ -18,6 +18,7 @@ DEFAULT_SLEEP = 0.025
 RETRY_SLEEP = 0.1
 BEFORE_RECV_SLEEP = 0.05
 RETRIES = 10
+CHECK_NONCE_UNIQUENESS = True
 
 port = randint(10000, 50000)
 last_query = ''
@@ -211,7 +212,7 @@ def check_apop_nonce(conn_id, msg):
         fail.append('Nesprávný formát úvodní zprávy:\n  ' + msg)
         return False
     nonce = nonce_regex_res.group(0)
-    if nonce in apop_nonces.values():
+    if CHECK_NONCE_UNIQUENESS and (nonce in apop_nonces.values()):
         fail.append('Nonce není unikátní:\n  ' + nonce)
         return False
     apop_nonces[conn_id] = nonce
