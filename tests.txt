@@ -21,21 +21,21 @@ S   +OK <any>
 C   PASS Ab.
 S   +OK <any>
 C   STAT
-S   +OK 5 2374
+S   +OK 5 2451
 C   LIST
 S   +OK <any>
-    1 520
-    2 476
-    3 443
-    4 484
-    5 451
+    1 536
+    2 493
+    3 458
+    4 500
+    5 464
     .
 C   LIST 4
-S   +OK <id> 484
+S   +OK <id> 500
 C   LIST 7
 S   -ERR <any>
 C   STAT
-S   +OK 5 2374
+S   +OK 5 2451
 C   TOP 2 1
 S   +OK <any>
     Return-Path: <root@localhost>
@@ -191,14 +191,14 @@ C   Pass Ab.
 S   +OK <any>
 C   list
 S   +OK scan listing follows
-    1 520
-    2 476
-    3 484
-    4 443
-    5 451
+    1 536
+    2 493
+    3 500
+    4 458
+    5 464
     .
 C   LIst 2
-S   +OK <id> 476
+S   +OK <id> 493
 C   dele 3
 S   +OK <any>
 C   dele 3
@@ -241,11 +241,11 @@ S   +OK <any>
 C   PASS Ab.
 S   +OK <any>
 C   STAT
-S   +OK 2 48
+S   +OK 2 62
 C   LIST
 S   +OK <any>
-    1 43
-    2 5
+    1 56
+    2 6
     .
 C   RETR 1
 S   +OK <any>
