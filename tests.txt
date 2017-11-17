@@ -279,3 +279,44 @@ S   +OK <any>
     .
 C   QUIT
 S   +OK <any>
+
+------------------------
+
+E-maily, které nemají na konci souboru LF
+./popser -p <port> -c -a authfile -d no-newline
+S   +OK <any>
+C   USER Tam
+S   +OK <any>
+C   PASS Ab.
+S   +OK <any>
+C   LIST
+S   +OK <any>
+    1 68
+    2 73
+    3 24
+    4 65
+    .
+C   RETR 1
+S   +OK <any>
+    Soubor s jednim radkem ukoncenym CR+LF
+    a radkem neukoncenym nicim
+    .
+C   RETR 2
+S   +OK <any>
+    Soubor, ktery obsahuje jak samotne LF
+    tak i CR+LF
+    a na konci nema nic
+    .
+C   RETR 3
+S   +OK <any>
+    Soubor bez \n na konci
+    .
+C   RETR 4
+S   +OK <any>
+    Soubor s jednim radkem ukoncenym LF
+    a radkem neukoncenym nicim
+    .
+C   STAT
+S   +OK 4 230
+C   QUIT
+S   +OK <any>
