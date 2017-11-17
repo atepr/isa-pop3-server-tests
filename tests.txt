@@ -233,6 +233,44 @@ S   +OK <any>
 
 ---------------
 
+Zabezpečené přihlášení pomocí APOP
+./popser -p <port> -a authfile -d Maildir2
+F   apop
+S   <nonce>
+C   USER Tam
+S   -ERR <any>
+C   PASS Ab.
+S   -ERR <any>
+S2  <nonce>
+S3  <nonce>
+S4  <nonce>
+C4  QUIT
+S4  +OK
+S5  <nonce>
+C5  QUIT
+S5  +OK
+S6  <nonce>
+C2  APOP Tam Ab.
+S2  +OK <any>
+C2  QUIT
+S2  +OK <any>
+C6  APOP tam Ab.
+S6  -ERR <any>
+C6  APOP Tam spatne-heslo
+S6  -ERR <any>
+C6  APOP Tam Ab.
+S6  +OK <any>
+C3  APOP Tam Ab.
+S3  -ERR <any>
+C6  QUIT
+S6  +OK <any>
+C3  APOP Tam Ab.
+S3  +OK <any>
+C3  QUIT
+S3  +OK <any>
+
+---------------
+
 E-maily obsahující tečky
 ./popser -p <port> -c -a authfile -d Maildir2
 S   +OK <any>

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import codecs
+import hashlib
 import re
 import time
 import os
+import signal
 import shutil
 import socket
 import subprocess
@@ -25,6 +27,7 @@ fail = []
 conn = {}
 msg_ids = []
 inited_maildirs = set()
+apop_nonces = {}
 
 if sys.stdout.encoding is None or sys.stdout.encoding == 'ANSI_X3.4-1968':
     utf8_writer = codecs.getwriter('UTF-8')
@@ -104,6 +107,8 @@ def translate_callback(r):
 def do_send_msg(conn_id, val):
     global fail, last_query
     val = re.sub(r'^([A-Za-z]+ )([0-9]+)', translate_callback, val)
+    if 'apop' in flags and val[:4].upper() == 'APOP':
+        val = re.sub(r'(APOP .+? )(.+)', lambda x: apop_hash(conn_id, x), val)
     if not my_send(get_connection(conn_id), val + "\r\n"):
         fail.append('Chyba při odesílání zprávy:\n  ' + val[:70])
         return False
@@ -124,6 +129,10 @@ def do_recv_msg(conn_id, val):
     s = s[:-1]
     if last_query.upper() == 'LIST':
         return check_list(s, val)
+        
+    if 'apop' in flags and val == '<nonce>':
+        return check_apop_nonce(conn_id, s)
+    
     val = val.replace(r'<id>', last_id)
     val_r = re.escape(val)
     val_r = val_r.replace(r'\ \<any\>', '.*')
@@ -195,6 +204,23 @@ def check_list(rec, exp):
         fail.append(str)
     return out
 
+def check_apop_nonce(conn_id, msg):
+    global fail, apop_nonces
+    nonce_regex_res = re.search("<.+>", msg)
+    if msg[:4] != '+OK ' or nonce_regex_res is None:
+        fail.append('Nesprávný formát úvodní zprávy:\n  ' + msg)
+        return False
+    nonce = nonce_regex_res.group(0)
+    if nonce in apop_nonces.values():
+        fail.append('Nonce není unikátní:\n  ' + nonce)
+        return False
+    apop_nonces[conn_id] = nonce
+    return True
+    
+def apop_hash(conn_id, msg):
+    str = (apop_nonces[conn_id] + msg.group(2)).encode('utf-8')
+    return msg.group(1) + hashlib.md5(str).hexdigest()
+
 def read_file(data):
     m_key = None
     m_val = None
@@ -217,6 +243,7 @@ def do_test(test):
     flags = set()
     fail = []
     conn = {}
+    apop_nonces = {}
     
     l = test.split('\n', 2)
     if len(l) == 2:
@@ -269,7 +296,7 @@ def do_test(test):
             fail.append('Neočekávaný návrarový kód (chci %s, dostal jsem %s)' %
                         (want, got))
     else:
-        srv.kill()
+        srv.send_signal(signal.SIGINT)
     
     out = srv.stdout.read()
     err = srv.stderr.read()
