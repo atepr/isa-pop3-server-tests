@@ -234,7 +234,7 @@ S   +OK <any>
 ---------------
 
 Zabezpečené přihlášení pomocí APOP
-./popser -p <port> -a authfile -d Maildir2
+./popser -p <port> -a authfile -d Maildir
 F   apop
 S   <nonce>
 C   USER Tam
@@ -264,10 +264,123 @@ C3  APOP Tam Ab.
 S3  -ERR <any>
 C6  QUIT
 S6  +OK <any>
+C   APOP Tam Ab.
+S   +OK <any>
+C   QUIT
+S  +OK <any>
 C3  APOP Tam Ab.
 S3  +OK <any>
 C3  QUIT
 S3  +OK <any>
+
+---------------
+
+Mazání zpráv + jednoduchý APOP
+./popser -p <port> -a authfile -d Maildir
+F   apop
+S   <nonce>
+C   APOP Tam Ab.
+S   +OK <any>
+C   LIST
+S   +OK <any>
+    1 536
+    2 493
+    3 458
+    4 500
+    5 464
+    .
+C   STAT
+S   +OK 5 2451
+C   DELE 3
+S   +OK <any>
+C   DELE 4
+S   +OK <any>
+C   LIST 4
+S   -ERR <any>
+C   UIDL 4
+S   -ERR <any>
+C   RETR 4
+S   -ERR <any>
+C   TOP 4 1
+S   -ERR <any>
+C   STAT
+S   +OK 3 1493
+C   RSET
+S   +OK <any>
+C   LIST 4
+S   +OK <id> 500
+C   UIDL 4
+S   +OK <id> <any>
+C   RETR 4
+S   +OK <any>
+    Return-Path: <root@localhost>
+    X-Original-To: isa2015@localhost
+    Delivered-To: isa2015@localhost
+    Received: from localhost (localhost [127.0.0.1])
+    	by isa2015 (Postfix) with ESMTP id 3FBBC260CB
+    	for <isa2015@localhost>; Sun, 22 Oct 2017 16:28:25 +0200 (CEST)
+    Subject: Email cislo 1
+    Message-Id: <20171022142834.3FBBC260CB@isa2015>
+    Date: Sun, 22 Oct 2017 16:28:25 +0200 (CEST)
+    From: root@localhost
+    
+    Ahoj,
+    
+    Posilam si mail, protoze mi jebe z projektu,
+    doufam, ze to stoji aspon za to,
+    cus.
+    .
+C   TOP 4 1
+S   +OK <any>
+    Return-Path: <root@localhost>
+    X-Original-To: isa2015@localhost
+    Delivered-To: isa2015@localhost
+    Received: from localhost (localhost [127.0.0.1])
+    	by isa2015 (Postfix) with ESMTP id 3FBBC260CB
+    	for <isa2015@localhost>; Sun, 22 Oct 2017 16:28:25 +0200 (CEST)
+    Subject: Email cislo 1
+    Message-Id: <20171022142834.3FBBC260CB@isa2015>
+    Date: Sun, 22 Oct 2017 16:28:25 +0200 (CEST)
+    From: root@localhost
+    
+    Ahoj,
+    .
+C   STAT
+S   +OK 5 2451
+C   DELE 1
+S   +OK <any>
+C   QUIT
+S   +OK <any>
+S2  <nonce>
+C2  APOP Tam Ab.
+S2  +OK <any>
+C2  STAT
+S2  +OK 4 1915
+C2  QUIT
+S2  +OK <any>
+
+---------------
+
+Kontrola smazání zprávy po novém spuštění serveru
+./popser -p <port> -a authfile -d Maildir -c
+S   +OK <any>
+C   USER Tam
+S   +OK <any>
+C   PASS Ab.
+S   +OK <any>
+C   STAT
+S   +OK 4 1915
+C   LIST
+S   +OK <any>
+    1 493
+    2 458
+    3 500
+    4 464
+    .
+C   LIST 1
+S   +OK 1 493
+C   QUIT
+S   +OK <any>
 
 ---------------
 
